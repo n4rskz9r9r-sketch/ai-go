@@ -4,6 +4,8 @@
   const G = GoEngine, T = I18N.t, NM = I18N.name;
   const Q = new URLSearchParams(location.search);
   const STREAM = Q.get('stream') === '1', FAST = Q.get('fast') === '1';
+  const VERT = STREAM && (Q.get('v') === '1' || Q.get('vertical') === '1'); // 1080x1920 Shorts layout
+  document.body.classList.toggle('vertical', VERT);
   const KEY = 'aigo.league.v1', CUR = 'aigo.cur.v1';
   const SPEEDS = [300, 650, 1000, 2000];
   let thinkMs = +Q.get('ms') || (FAST ? 60 : STREAM ? 650 : +(localStorage.getItem('aigo.ms') || 650));
@@ -14,7 +16,7 @@
   I18N.apply();
 
   // ---------- worker RPC ----------
-  const worker = new Worker('js/worker.js?v=4');
+  const worker = new Worker('js/worker.js?v=5');
   let rid = 0; const pend = new Map();
   worker.onmessage = (e) => { const d = e.data, p = pend.get(d.id); if (!p) return; pend.delete(d.id); if (d.type === 'error') { console.warn('worker:', d.message); p.rej(new Error(d.message)); } else p.res(d); };
   const rpc = (type, data) => new Promise((res, rej) => { const id = ++rid; pend.set(id, { res, rej }); worker.postMessage(Object.assign({ type, id }, data)); });
@@ -28,7 +30,7 @@
 
   // ---------- board renderer ----------
   const cv = document.getElementById('board'), ctx = cv.getContext('2d');
-  const DPR = Math.min(2, window.devicePixelRatio || 1), SIZE = 720, M = 42, CELL = (SIZE - 2 * M) / 18, R = CELL * 0.485;
+  const DPR = Math.min(2, window.devicePixelRatio || 1), SIZE = VERT ? 920 : 720, M = VERT ? 26 : 42, K = SIZE / 720, CELL = (SIZE - 2 * M) / 18, R = CELL * 0.485;
   cv.width = SIZE * DPR; cv.height = SIZE * DPR; ctx.scale(DPR, DPR);
   const X = (p) => M + G.px(p) * CELL, Y = (p) => M + G.py(p) * CELL;
   function mk(w, h) { const c = document.createElement('canvas'); c.width = w * DPR; c.height = h * DPR; const x = c.getContext('2d'); x.scale(DPR, DPR); return [c, x]; }
@@ -45,10 +47,10 @@
     for (let i = 0; i < 2500; i++) { w.fillStyle = `rgba(90,50,15,${r() * 0.05})`; w.fillRect(r() * SIZE, r() * SIZE, 1 + r() * 2, 1); }
     const v = w.createRadialGradient(SIZE / 2, SIZE / 2, SIZE * 0.3, SIZE / 2, SIZE / 2, SIZE * 0.75); v.addColorStop(0, 'rgba(0,0,0,0)'); v.addColorStop(1, 'rgba(60,30,5,0.35)'); w.fillStyle = v; w.fillRect(0, 0, SIZE, SIZE);
     w.strokeStyle = 'rgba(35,22,8,0.85)';
-    for (let i = 0; i < 19; i++) { w.lineWidth = i === 0 || i === 18 ? 2 : 1; w.beginPath(); w.moveTo(M, M + i * CELL); w.lineTo(M + 18 * CELL, M + i * CELL); w.stroke(); w.beginPath(); w.moveTo(M + i * CELL, M); w.lineTo(M + i * CELL, M + 18 * CELL); w.stroke(); }
-    w.fillStyle = 'rgba(35,22,8,0.9)'; for (const a of [3, 9, 15]) for (const b of [3, 9, 15]) { w.beginPath(); w.arc(M + a * CELL, M + b * CELL, 3.6, 0, 7); w.fill(); }
+    for (let i = 0; i < 19; i++) { w.lineWidth = (i === 0 || i === 18 ? 2 : 1) * (VERT ? 1.4 : 1); w.beginPath(); w.moveTo(M, M + i * CELL); w.lineTo(M + 18 * CELL, M + i * CELL); w.stroke(); w.beginPath(); w.moveTo(M + i * CELL, M); w.lineTo(M + i * CELL, M + 18 * CELL); w.stroke(); }
+    w.fillStyle = 'rgba(35,22,8,0.9)'; for (const a of [3, 9, 15]) for (const b of [3, 9, 15]) { w.beginPath(); w.arc(M + a * CELL, M + b * CELL, 3.6 * K, 0, 7); w.fill(); }
     w.font = '600 12px system-ui,sans-serif'; w.fillStyle = 'rgba(55,32,10,0.75)'; w.textAlign = 'center'; w.textBaseline = 'middle';
-    for (let i = 0; i < 19; i++) { const l = G.LETTERS[i], n = String(19 - i); w.fillText(l, M + i * CELL, M - 25); w.fillText(l, M + i * CELL, SIZE - M + 25); w.fillText(n, M - 26, M + i * CELL); w.fillText(n, SIZE - M + 26, M + i * CELL); }
+    if (!VERT) for (let i = 0; i < 19; i++) { const l = G.LETTERS[i], n = String(19 - i); w.fillText(l, M + i * CELL, M - 25); w.fillText(l, M + i * CELL, SIZE - M + 25); w.fillText(n, M - 26, M + i * CELL); w.fillText(n, SIZE - M + 26, M + i * CELL); }
   })();
   function stoneSprite(black) {
     const S = Math.ceil(R * 2 + 12), [c, x] = mk(S, S), cx = S / 2 - 1, cy = S / 2 - 1;
@@ -84,8 +86,8 @@
       if (b.color[p]) { ctx.strokeStyle = o === 1 ? '#000' : '#fff'; ctx.lineWidth = 1; ctx.strokeRect(X(p) - s / 2, Y(p) - s / 2, s, s); }
     }
     const lm = b.last;
-    if (lm >= 0 && b.color[lm]) { ctx.strokeStyle = b.color[lm] === 1 ? '#f5e3b5' : '#c0392b'; ctx.lineWidth = 2.4; ctx.beginPath(); ctx.arc(X(lm), Y(lm), R * 0.48, 0, 7); ctx.stroke(); }
-    else if (lm === G.PASS && !ov) { ctx.font = '700 22px system-ui,sans-serif'; ctx.textAlign = 'center'; ctx.fillStyle = 'rgba(40,20,5,0.75)'; ctx.fillText(T('pass', { n: NM(keyOf(3 - b.toPlay)) }), SIZE / 2, SIZE - 8); }
+    if (lm >= 0 && b.color[lm]) { ctx.strokeStyle = b.color[lm] === 1 ? '#f5e3b5' : '#c0392b'; ctx.lineWidth = 2.4 * K; ctx.beginPath(); ctx.arc(X(lm), Y(lm), R * 0.48, 0, 7); ctx.stroke(); }
+    else if (lm === G.PASS && !ov) { ctx.font = `700 ${VERT ? 40 : 22}px system-ui,sans-serif`; ctx.textAlign = 'center'; ctx.fillStyle = VERT ? 'rgba(20,10,0,0.85)' : 'rgba(40,20,5,0.75)'; ctx.fillText(T('pass', { n: NM(keyOf(3 - b.toPlay)) }), SIZE / 2, VERT ? SIZE / 2 : SIZE - 8); }
     requestAnimationFrame(frame);
   }
   requestAnimationFrame(frame);
@@ -111,18 +113,18 @@
   }
   function chart() {
     const c = $('chart'), W2 = c.clientWidth || 520, H2 = c.clientHeight || 132;
-    if (c.width !== W2 * DPR) { c.width = W2 * DPR; c.height = H2 * DPR; }
+    if (c.width !== W2 * DPR || c.height !== H2 * DPR) { c.width = W2 * DPR; c.height = H2 * DPR; }
     const x = c.getContext('2d'); x.setTransform(DPR, 0, 0, DPR, 0, 0); x.clearRect(0, 0, W2, H2);
     const a = app.L.alpha.hist, bb = app.L.beta.hist, n = Math.max(a.length, bb.length, 2);
     let lo = Math.min(...a, ...bb), hi = Math.max(...a, ...bb); const pad = Math.max(20, (hi - lo) * 0.12); lo -= pad; hi += pad;
-    const L0 = 38, px = (i) => L0 + (W2 - L0 - 8) * i / (n - 1), py = (v) => 6 + (H2 - 20) * (1 - (v - lo) / (hi - lo));
-    x.font = '11px system-ui,sans-serif'; x.fillStyle = '#9d8c70'; x.strokeStyle = 'rgba(255,255,255,0.07)'; x.lineWidth = 1; x.textAlign = 'right';
-    const step = Math.max(10, Math.pow(10, Math.floor(Math.log10((hi - lo) / 3))) * (((hi - lo) / 3) / Math.pow(10, Math.floor(Math.log10((hi - lo) / 3))) > 5 ? 5 : ((hi - lo) / 3) / Math.pow(10, Math.floor(Math.log10((hi - lo) / 3))) > 2 ? 2 : 1));
-    for (let v = Math.ceil(lo / step) * step; v <= hi; v += step) { x.beginPath(); x.moveTo(L0, py(v)); x.lineTo(W2 - 4, py(v)); x.stroke(); x.fillText(String(v), L0 - 4, py(v) + 4); }
+    const L0 = VERT ? 62 : 38, px = (i) => L0 + (W2 - L0 - 8) * i / (n - 1), py = (v) => 6 + (H2 - 20) * (1 - (v - lo) / (hi - lo));
+    x.font = (VERT ? 20 : 11) + 'px system-ui,sans-serif'; x.fillStyle = '#9d8c70'; x.strokeStyle = 'rgba(255,255,255,0.07)'; x.lineWidth = 1; x.textAlign = 'right';
+    const raw = (hi - lo) / Math.max(2, Math.floor(H2 / (VERT ? 40 : 35))), mag = Math.pow(10, Math.floor(Math.log10(raw))), f = raw / mag; const step = Math.max(10, mag * (f > 5 ? 10 : f > 2 ? 5 : f > 1 ? 2 : 1));
+    for (let v = Math.ceil(lo / step) * step; v <= hi; v += step) { x.beginPath(); x.moveTo(L0, py(v)); x.lineTo(W2 - 4, py(v)); x.stroke(); x.fillText(String(v), L0 - 6, py(v) + (VERT ? 7 : 4)); }
     x.textAlign = 'left'; x.fillText(T('gamesN', { n: n - 1 }), L0 + 2, H2 - 2);
     for (const [arr, col] of [[a, '#e8a33d'], [bb, '#4fb3d9']]) {
-      x.strokeStyle = col; x.lineWidth = 2.4; x.beginPath(); arr.forEach((v, i) => (i ? x.lineTo(px(i), py(v)) : x.moveTo(px(i), py(v)))); x.stroke();
-      const i = arr.length - 1; x.fillStyle = col; x.beginPath(); x.arc(px(i), py(arr[i]), 3.5, 0, 7); x.fill();
+      x.strokeStyle = col; x.lineWidth = VERT ? 4 : 2.4; x.beginPath(); arr.forEach((v, i) => (i ? x.lineTo(px(i), py(v)) : x.moveTo(px(i), py(v)))); x.stroke();
+      const i = arr.length - 1; x.fillStyle = col; x.beginPath(); x.arc(px(i), py(arr[i]), VERT ? 6 : 3.5, 0, 7); x.fill();
     }
   }
   function lessonLine(key) {
@@ -237,7 +239,7 @@
   { const q = new URLSearchParams(); q.set('stream', '1'); q.set('r', '2'); if (I18N.LANG === 'en') q.set('lang', 'en'); $('lnkStream').href = '?' + q.toString(); }
   syncRun();
   // scale to window (normal page); stream is fixed 1280x720
-  function fit() { const a = $('app'), wr = $('wrap'); const s = STREAM ? 1 : Math.min(1, window.innerWidth / 1280); a.style.transform = s < 1 ? `scale(${s})` : ''; wr.style.height = 720 * s + 'px'; }
+  function fit() { const a = $('app'), wr = $('wrap'); const s = STREAM ? 1 : Math.min(1, window.innerWidth / 1280); a.style.transform = s < 1 ? `scale(${s})` : ''; wr.style.height = (VERT ? 1920 : 720) * s + 'px'; }
   window.addEventListener('resize', fit); fit();
 
   // ---------- boot ----------
