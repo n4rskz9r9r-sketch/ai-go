@@ -6,3 +6,15 @@ game 5: B=alpha W+R moves=155 resign 23.7s avgPO=523 | Alpha 1063 (3W) Beta 1060
 game 6: B=beta B+R moves=174 resign 26.6s avgPO=541 | Alpha 1055 (3W) Beta 1087 (3W) | learned A:lib4- B:cut+ bench A 9/12 B 11/12
 game 7: B=alpha W+R moves=293 resign 44.8s avgPO=577 | Alpha 1029 (3W) Beta 1112 (4W) | learned A:cut- B:lib4- bench A 9/14 B 13/14
 game 8: B=beta B+R moves=292 resign 44.6s avgPO=619 | Alpha 1043 (3W) Beta 1095 (5W) | learned A:lib4- B:follow+ bench A 11/16 B 13/16
+game 9: B=alpha W+R moves=155 resign 23.7s avgPO=559 | Alpha 1058 (3W) Beta 1100 (6W) | learned A:lib2+ B:atari+ bench A 13/18 B 14/18
+game 10: B=beta W+R moves=295 resign 45.1s avgPO=601 | Alpha 1086 (4W) Beta 1109 (6W) | learned A:atari+ B:lib2+ bench A 15/20 B 16/20
+game 11: B=alpha B+R moves=228 resign 34.9s avgPO=566 | Alpha 1114 (5W) Beta 1101 (6W) | learned A:lib4- B:lib4- bench A 17/22 B 17/22
+game 12: B=beta W+72.5 moves=400 cap 61.4s avgPO=629 | Alpha 1119 (6W) Beta 1114 (6W) | learned A:atari+ B:atari+ bench A 18/24 B 19/24
+game 13: B=alpha W+R moves=149 resign 22.8s avgPO=556 | Alpha 1129 (6W) Beta 1141 (7W) | learned A:lib2- B:atari+ bench A 20/26 B 21/26
+game 14: B=beta W+R moves=149 resign 22.8s avgPO=527 | Alpha 1154 (7W) Beta 1151 (7W) | learned A:follow+ B:follow+ bench A 22/28 B 23/28
+game 15: B=alpha B+R moves=148 resign 22.6s avgPO=540 | Alpha 1158 (8W) Beta 1161 (7W) | learned A:follow+ B:follow+ bench A 23/30 B 25/30
+game 16: B=beta B+15.5 moves=400 cap 61.4s avgPO=639 | Alpha 1131 (8W) Beta 1188 (8W) | learned A:atari- B:cut- bench A 23/32 B 27/32
+game 17: B=alpha W+R moves=149 resign 22.9s avgPO=518 | Alpha 1146 (8W) Beta 1213 (9W) | learned A:atari- B:atari- bench A 25/34 B 29/34
+game 18: B=beta B+20.5 moves=400 cap 61.4s avgPO=628 | Alpha 1140 (8W) Beta 1196 (10W) | learned A:cut- B:cut- bench A 26/36 B 29/36
+game 19: B=alpha B+R moves=240 resign 36.7s avgPO=549 | Alpha 1169 (9W) Beta 1205 (10W) | learned A:follow+ B:cut- bench A 28/38 B 31/38
+game 20: B=beta B+R moves=172 resign 26.3s avgPO=568 | Alpha 1182 (9W) Beta 1229 (11W) | learned A:atari- B:near+ bench A 30/40 B 33/40

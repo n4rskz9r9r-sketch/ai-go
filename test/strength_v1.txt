@@ -1,0 +1,32 @@
+---
+pid: 701722
+cwd: "/workspace/ai-go"
+command: "cd /workspace/ai-go && node test/strength.js /tmp/league20b.json alpha 0 && node test/strength.js /tmp/league20b.json beta 0; cp /tmp/league20b.json test/league_after20.json; ls test/*.txt"
+title: "Instinct strength on final league"
+status: succeeded
+started_at: 2026-10-10T20:25:59.649Z
+running_for_ms: 306870   
+---
+alpha after 20 games: instinct (policy-only) vs rookie 40/40
+  search game 1: trained as Black WON B+R (192 moves)
+  search game 2: trained as White WON W+R (155 moves)
+  search game 3: trained as Black WON B+R (158 moves)
+  search game 4: trained as White WON W+R (155 moves)
+alpha: with search (200ms/move) vs rookie 4/4
+beta after 20 games: instinct (policy-only) vs rookie 40/40
+  search game 1: trained as Black WON B+R (236 moves)
+  search game 2: trained as White WON W+R (157 moves)
+  search game 3: trained as Black lost W+R (295 moves)
+  search game 4: trained as White WON W+R (157 moves)
+beta: with search (200ms/move) vs rookie 3/4
+test/learn20.txt
+test/learn20_v1.txt
+test/live_game.txt
+test/strength_v0.txt
+test/timing650.txt
+
+---
+exit_code: 0
+elapsed_ms: 306869
+ended_at: 2026-10-10T20:31:06.518Z
+---
