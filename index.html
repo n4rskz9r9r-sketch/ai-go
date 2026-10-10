@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Go Dojo — two AIs teaching themselves Go</title>
+<meta name="description" content="Two AIs play full 19x19 Go against each other 24/7 and learn from every game.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22%3E%3Crect width=%2216%22 height=%2216%22 rx=%223%22 fill=%22%23dcae62%22/%3E%3Ccircle cx=%226%22 cy=%227%22 r=%224%22/%3E%3Ccircle cx=%2211%22 cy=%2210%22 r=%224%22 fill=%22%23fff%22/%3E%3C/svg%3E">
+<link rel="stylesheet" href="css/style.css?v=1">
+</head>
+<body>
+<div id="wrap">
+  <div id="app">
+    <div id="boardBox"><canvas id="board"></canvas><div id="banner"><div class="b1"></div><div class="b2"></div></div></div>
+    <div id="side">
+      <header><div class="ttl" data-i18n="title">AI Go Dojo</div><div class="sub" data-i18n="subtitle"></div></header>
+      <div class="cards">
+        <div class="card" id="card-alpha"><div class="stone"></div><div class="who"><div class="nm"></div><div class="clr"></div></div><div class="lv"></div><div class="elo"></div><div class="meta"></div><div class="meta2"></div><div class="think"></div></div>
+        <div class="card" id="card-beta"><div class="stone"></div><div class="who"><div class="nm"></div><div class="clr"></div></div><div class="lv"></div><div class="elo"></div><div class="meta"></div><div class="meta2"></div><div class="think"></div></div>
+      </div>
+      <div class="status">
+        <div class="row"><span id="gNo"></span><span id="mNo"></span><span id="est"></span></div>
+        <div class="wbar"><div class="wb" id="wbB"></div><span id="wbL"></span><span id="wbM" data-i18n="winprob"></span><span id="wbR"></span></div>
+        <div id="thinkLine"></div>
+      </div>
+      <div class="chartbox"><div class="lbl" data-i18n="chart"></div><canvas id="chart"></canvas></div>
+      <div class="learned"><div class="lbl" data-i18n="learnedTitle"></div><div id="ln-alpha" class="ln"></div><div id="ln-beta" class="ln"></div></div>
+      <div class="foot"><div id="foot1"></div><div id="foot2"></div></div>
+    </div>
+  </div>
+</div>
+<div id="controls">
+  <button id="btnRun"></button>
+  <label><span data-i18n="speed"></span> <select id="selSpeed"></select></label>
+  <button id="btnExport" data-i18n="export"></button>
+  <button id="btnImport" data-i18n="import"></button><input type="file" id="fileImport" accept=".json,application/json" hidden>
+  <button id="btnReset" class="danger" data-i18n="reset"></button>
+  <span id="soundCtl"><button id="btnSound">🔇</button>
+    <label><span data-i18n="vol"></span> <input type="range" id="sndVol" min="0" max="100" value="60"></label>
+    <label><input type="checkbox" id="sndBgm" checked> <span data-i18n="bgm"></span></label>
+    <label><input type="checkbox" id="sndSfx" checked> <span data-i18n="sfx"></span></label></span>
+  <a id="lnkLang" href="#"></a>
+  <a id="lnkStream" href="?stream=1&amp;r=1" target="_blank" data-i18n="streamLink"></a>
+  <div id="toast"></div>
+</div>
+<script src="js/i18n.js?v=1"></script>
+<script src="js/engine.js?v=1"></script>
+<script src="js/audio.js?v=1"></script>
+<script src="js/ui.js?v=1"></script>
+</body>
+</html>
