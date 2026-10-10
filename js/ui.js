@@ -14,7 +14,7 @@
   I18N.apply();
 
   // ---------- worker RPC ----------
-  const worker = new Worker('js/worker.js?v=3');
+  const worker = new Worker('js/worker.js?v=4');
   let rid = 0; const pend = new Map();
   worker.onmessage = (e) => { const d = e.data, p = pend.get(d.id); if (!p) return; pend.delete(d.id); if (d.type === 'error') { console.warn('worker:', d.message); p.rej(new Error(d.message)); } else p.res(d); };
   const rpc = (type, data) => new Promise((res, rej) => { const id = ++rid; pend.set(id, { res, rej }); worker.postMessage(Object.assign({ type, id }, data)); });
@@ -143,14 +143,14 @@
     const s = app.lastSearch; let pb = 0.5, est = null;
     if (s) { pb = s.color === 1 ? s.winrate : 1 - s.winrate; est = s.scoreEst; }
     if (app.final) { pb = app.final.winner === 1 ? 1 : 0; est = app.final.margin != null ? app.final.margin : est; }
-    $('est').textContent = est == null ? T('komi') : `${T('estimate')} ${est >= 0 ? 'B' : 'W'}+${Math.abs(Math.round(est * 2) / 2).toFixed(1)}`;
+    $('est').textContent = est == null ? T('komi') : `${T('estimate')} ${I18N.est(est)}`;
     $('wbB').style.width = (pb * 100).toFixed(1) + '%';
     $('wbL').textContent = `${NM(app.bk)} ${Math.round(pb * 100)}%`; $('wbR').textContent = `${Math.round((1 - pb) * 100)}% ${NM(wk())}`;
-    $('thinkLine').textContent = app.paused ? T('paused') : (s ? T('sims', { n: fmt(s.playouts) }) + (s.pv && s.pv.length ? ' · ' + s.pv.slice(0, 4).map(G.coord).join(' → ') : '') : T('rules', { m: G.MAX_MOVES }));
+    $('thinkLine').textContent = app.paused ? T('paused') : (s ? T('sims', { n: fmt(s.playouts) }) + (s.pv && s.pv.length ? ' · ' + s.pv.slice(0, 4).map((m) => (m === G.PASS ? T('passWord') : m === G.RESIGN ? T('resignWord') : G.coord(m))).join(' → ') : '') : T('rules', { m: G.MAX_MOVES }));
     lessonLine('alpha'); lessonLine('beta');
     const last = L.log[L.log.length - 1];
     const dur = L.durations.length ? (L.durations.reduce((a, c) => a + c, 0) / L.durations.length / 60000).toFixed(1) : null;
-    $('foot1').textContent = last ? `${T('lastGame')}: ${T('wins_by', { n: NM(last.win), r: last.res })} · ${last.moves} ${T('moves')}${dur ? ' · ' + T('avgLen', { m: dur }) : ''}` : T('noGames');
+    $('foot1').textContent = last ? `${T('lastGame')}: ${T('wins_by', { n: NM(last.win), r: I18N.res(last.res) })} · ${last.moves} ${T('moves')}${dur ? ' · ' + T('avgLen', { m: dur }) : ''}` : T('noGames');
     $('foot2').textContent = `${T('h2h')}: ${NM('alpha')} ${L.alpha.wins} – ${L.beta.wins} ${NM('beta')} · ${T('komi')}`;
     chart();
   }
@@ -207,7 +207,7 @@
       const s = G.finalScore(app.game, own); app.overlay = { owner: s.owner, dead: new Set(s.dead) };
     }
     app.final = res;
-    const rs = G.resultString(res), winKey = keyOf(res.winner), loseKey = keyOf(3 - res.winner);
+    const rs = I18N.res(G.resultString(res)), winKey = keyOf(res.winner), loseKey = keyOf(3 - res.winner);
     setBanner(T('wins_by', { n: NM(winKey), r: rs }), res.resign ? T('resigns', { n: NM(loseKey) }) : `${T('black')} ${res.black} · ${T('white')} ${res.white} + 7.5`);
     GSound.play('end'); renderPanel();
     const ms = Date.now() - app.startT;
@@ -233,8 +233,8 @@
   $('btnExport').onclick = () => { const blob = new Blob([JSON.stringify(app.L)], { type: 'application/json' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `ai-go-brains-game${app.L.games}.json`; document.body.appendChild(a); a.click(); a.remove(); };
   $('btnImport').onclick = () => $('fileImport').click();
   $('fileImport').onchange = async (ev) => { const f = ev.target.files[0]; if (!f) return; try { const j = JSON.parse(await f.text()); if (!j.alpha || !j.beta) throw new Error('bad'); app.gen++; const r = await rpc('load', { state: j }); app.L = r.state; saveLeague(); localStorage.removeItem(CUR); toast(T('imported')); playGame(null); } catch (e) { toast(T('importFail')); } ev.target.value = ''; };
-  const ln = $('lnkLang'); ln.textContent = T('lang'); { const q = new URLSearchParams(location.search); if (I18N.LANG === 'ko') q.delete('lang'); else q.set('lang', 'ko'); ln.href = '?' + q.toString(); }
-  { const q = new URLSearchParams(); q.set('stream', '1'); q.set('r', '1'); if (I18N.LANG === 'ko') q.set('lang', 'ko'); $('lnkStream').href = '?' + q.toString(); }
+  const ln = $('lnkLang'); ln.textContent = T('lang'); { const q = new URLSearchParams(location.search); if (I18N.LANG === 'ko') q.set('lang', 'en'); else q.delete('lang'); ln.href = '?' + q.toString(); }
+  { const q = new URLSearchParams(); q.set('stream', '1'); q.set('r', '2'); if (I18N.LANG === 'en') q.set('lang', 'en'); $('lnkStream').href = '?' + q.toString(); }
   syncRun();
   // scale to window (normal page); stream is fixed 1280x720
   function fit() { const a = $('app'), wr = $('wrap'); const s = STREAM ? 1 : Math.min(1, window.innerWidth / 1280); a.style.transform = s < 1 ? `scale(${s})` : ''; wr.style.height = 720 * s + 'px'; }

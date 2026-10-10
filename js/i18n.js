@@ -1,8 +1,8 @@
-/* AI Go Dojo — language. English by default, ?lang=ko for Korean. */
+/* AI Go Dojo — language. Korean by default, ?lang=en for English. */
 (function (root) {
   'use strict';
   const Q = new URLSearchParams((root.location && root.location.search) || '');
-  const LANG = Q.get('lang') === 'ko' ? 'ko' : 'en';
+  const LANG = Q.get('lang') === 'en' ? 'en' : 'ko';
   const D = {
     en: {
       title: 'AI Go Dojo', subtitle: 'Two AIs teaching themselves Go — 19×19, live 24/7',
@@ -16,22 +16,22 @@
       start: 'Start', pause: 'Pause', speed: 'Think time', reset: 'Reset learning', export: 'Export brains', import: 'Import brains',
       confirmReset: 'Erase everything both AIs have learned and start from zero?', imported: 'Brains imported.', importFail: 'Could not read that file.',
       vol: 'Volume', bgm: 'Music', sfx: 'Stones', tapSound: '🔊 Tap to enable sound', clickSound: '🔊 Click to enable sound', streamLink: 'OBS stream view',
-      perMove: '{s}s / move', lang: 'Korean', moves: 'moves', gamesN: '{n} games', h2h: 'Head-to-head', rules: 'Rules: area scoring, positional superko, two passes end the game, resign when hopeless, {m}-move cap.',
+      perMove: '{s}s / move', passWord: 'pass', resignWord: 'resign', lang: '한국어', moves: 'moves', gamesN: '{n} games', h2h: 'Head-to-head', rules: 'Rules: area scoring, positional superko, two passes end the game, resign when hopeless, {m}-move cap.',
       paused: 'Paused',
     },
     ko: {
       title: 'AI 바둑 도장', subtitle: '스스로 배우며 크는 두 AI의 19줄 바둑 · 24시간 생방송',
-      black: '흑', white: '백', elo: 'Elo', lv: 'Lv', wins: '승', games: '판', caps: '따낸 돌', winrate: '승률',
-      game: '대국', move: '수', estimate: '형세', thinking: '{n} 생각 중…', sims: '시뮬레이션 {n}번',
+      black: '흑', white: '백', elo: 'Elo', wins: '승', games: '판', caps: '따낸 돌', winrate: '승률',
+      game: '대국', move: '수', lv: '레벨', estimate: '형세', thinking: '{n} 생각 중…', sims: '시뮬레이션 {n}번',
       winprob: '승리 확률', chart: 'Elo 점수 (배울수록 올라가요)', learnedTitle: '방금 배운 것',
       lastGame: '지난 대국', noGames: '첫 대국 — 두 AI는 아직 규칙만 알아요.', komi: '중국식 계가 · 덤 7.5집',
-      resigns: '{n} 불계패 (기권)', wins_by: '{n} 승리 {r}', counting: '계가 중…', learning: '기보 복습 중…',
+      resigns: '{n} 불계패 (기권)', wins_by: '{n} {r}', counting: '계가 중…', learning: '기보 복습 중…',
       nextGame: '{s}초 뒤 다음 대국', pass: '{n} 패스', avgLen: '평균 {m}분',
       learnedLine: '{n}: {t}', shapes: ' (새 모양 {k}개)', bench: '직감 테스트 {w}/{n}',
       start: '시작', pause: '일시정지', speed: '생각 시간', reset: '학습 초기화', export: '두뇌 내보내기', import: '두뇌 불러오기',
       confirmReset: '두 AI가 배운 걸 모두 지우고 처음부터 시작할까요?', imported: '두뇌를 불러왔어요.', importFail: '파일을 읽을 수 없어요.',
       vol: '볼륨', bgm: '배경음악', sfx: '돌 소리', tapSound: '🔊 화면을 터치하면 소리 켜짐', clickSound: '🔊 클릭하면 소리 켜짐', streamLink: 'OBS 방송 화면',
-      perMove: '한 수 {s}초', lang: 'English', moves: '수', gamesN: '{n}판', h2h: '상대 전적', rules: '규칙: 중국식 계가, 동형반복 금지, 연속 두 번 패스로 종료, 가망 없으면 기권, 최대 {m}수.',
+      perMove: '한 수 {s}초', passWord: '패스', resignWord: '기권', lang: 'English', moves: '수', gamesN: '{n}판', h2h: '상대 전적', rules: '규칙: 중국식 계가, 동형반복 금지, 연속 두 번 패스로 종료, 가망 없으면 기권, 최대 {m}수.',
       paused: '일시정지됨',
     },
   };
@@ -93,8 +93,10 @@
     },
   };
   function t(key, vars) { let s = (D[LANG][key] != null ? D[LANG][key] : D.en[key] != null ? D.en[key] : key); if (vars) for (const k in vars) s = s.split('{' + k + '}').join(vars[k]); return s; }
+  function res(r) { if (LANG !== 'ko' || !r) return r; const m = /^([BW])\+(R|[\d.]+)$/.exec(r); if (!m) return r; return m[2] === 'R' ? '불계승' : m[2] + '집 승'; }
+  function est(v) { const a = Math.abs(Math.round(v * 2) / 2).toFixed(1); return LANG === 'ko' ? (v >= 0 ? '흑 ' : '백 ') + a + '집 우세' : (v >= 0 ? 'B' : 'W') + '+' + a; }
   const name = (key) => NAMES[LANG][key] || key;
   const lesson = (k) => LESSONS[LANG][k] || LESSONS[LANG].none;
   function apply(rootEl) { (rootEl || document).querySelectorAll('[data-i18n]').forEach((el) => { el.textContent = t(el.getAttribute('data-i18n')); }); }
-  root.I18N = { LANG, t, name, lesson, apply, LESSONS, D };
+  root.I18N = { LANG, t, name, lesson, apply, LESSONS, D, res, est };
 })(typeof self !== 'undefined' ? self : this);
