@@ -1,0 +1,8 @@
+game 1: B=alpha W+R moves=217 resign 33.2s avgPO=588 | Alpha 1012 (0W) Beta 1027 (1W) | learned A:l1- B:l1- bench A 2/2 B 2/2
+game 2: B=beta W+R moves=227 resign 34.8s avgPO=587 | Alpha 1000 (1W) Beta 1038 (1W) | learned A:tenuki- B:tenuki- bench A 2/4 B 4/4
+game 3: B=alpha B+R moves=242 resign 37.0s avgPO=601 | Alpha 1028 (2W) Beta 1047 (1W) | learned A:tenuki- B:tenuki- bench A 4/6 B 6/6
+game 4: B=beta W+R moves=311 resign 47.5s avgPO=687 | Alpha 1054 (3W) Beta 1056 (1W) | learned A:tenuki- B:tenuki- bench A 6/8 B 8/8
+game 5: B=alpha W+R moves=155 resign 23.7s avgPO=523 | Alpha 1063 (3W) Beta 1060 (2W) | learned A:atari- B:lib4- bench A 8/10 B 9/10
+game 6: B=beta B+R moves=174 resign 26.6s avgPO=541 | Alpha 1055 (3W) Beta 1087 (3W) | learned A:lib4- B:cut+ bench A 9/12 B 11/12
+game 7: B=alpha W+R moves=293 resign 44.8s avgPO=577 | Alpha 1029 (3W) Beta 1112 (4W) | learned A:cut- B:lib4- bench A 9/14 B 13/14
+game 8: B=beta B+R moves=292 resign 44.6s avgPO=619 | Alpha 1043 (3W) Beta 1095 (5W) | learned A:lib4- B:follow+ bench A 11/16 B 13/16

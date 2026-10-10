@@ -1,0 +1,3 @@
+GAME {"final":{"winner":1,"resign":true},"moves":178,"banner":"Alpha wins B+R\nNext game in 12s","sound":"running","hangul":0} minutes 1.99
+LEAGUE {"a":1008,"b":992,"la":"🧠 Alpha: tenuki less, respond more (+1 new shapes)","lb":"🧠 Beta: tenuki less, respond more (+1 new shapes)"}
+ERRORS []

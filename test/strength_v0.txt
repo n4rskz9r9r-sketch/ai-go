@@ -1,0 +1,6 @@
+beta after 20 games: instinct (policy-only) vs rookie 38/40
+  search game 1: trained as Black WON B+R (186 moves)
+  search game 2: trained as White WON W+R (157 moves)
+  search game 3: trained as Black WON B+R (176 moves)
+  search game 4: trained as White WON W+R (157 moves)
+beta: with search (250ms/move) vs rookie 4/4

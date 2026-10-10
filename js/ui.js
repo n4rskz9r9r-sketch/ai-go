@@ -14,7 +14,7 @@
   I18N.apply();
 
   // ---------- worker RPC ----------
-  const worker = new Worker('js/worker.js?v=1');
+  const worker = new Worker('js/worker.js?v=2');
   let rid = 0; const pend = new Map();
   worker.onmessage = (e) => { const d = e.data, p = pend.get(d.id); if (!p) return; pend.delete(d.id); if (d.type === 'error') { console.warn('worker:', d.message); p.rej(new Error(d.message)); } else p.res(d); };
   const rpc = (type, data) => new Promise((res, rej) => { const id = ++rid; pend.set(id, { res, rej }); worker.postMessage(Object.assign({ type, id }, data)); });

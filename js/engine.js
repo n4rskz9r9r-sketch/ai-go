@@ -411,8 +411,8 @@
     }
     // resignation
     mem = mem || {}; const wr = res.winrate, lead = res.scoreEst * (me === BLACK ? 1 : -1);
-    mem.low = (wr < 0.08 && lead < -12 && b.moveNum > 90) ? (mem.low || 0) + 1 : 0;
-    if (mem.low >= 3) return RESIGN;
+    mem.low = (wr < 0.06 && lead < -15 && b.moveNum > 140) ? (mem.low || 0) + 1 : 0;
+    if (mem.low >= 4) return RESIGN;
     if (m >= 0 && !game.isLegal(m)) m = PASS;
     return m;
   }
@@ -517,7 +517,7 @@
     // learning
     for (const [key, color] of [[bk, BLACK], [wk, WHITE]]) {
       const A = L[key], D = AI_DEFS[key];
-      const who = new Set(D.study ? [BLACK, WHITE] : [color]);
+      const who = new Set(D.study || winner !== color ? [BLACK, WHITE] : [color]); // Beta always studies both sides; Alpha studies the winner's moves after a loss
       const rep = learnFromGame(A.brain, moves, records, winner, who, D);
       A.positions += rep.positions; A.shapes += rep.newShapes; A.lessons++;
       const les = lessonOf(rep); A.learned.push(les); if (A.learned.length > 8) A.learned.shift();
