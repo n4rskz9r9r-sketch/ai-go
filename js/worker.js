@@ -1,5 +1,5 @@
 /* AI Go Dojo — search & learning worker */
-importScripts('engine.js');
+importScripts('engine.js' + (self.location.search || ''));
 const G = self.GoEngine;
 let L = G.newLeague();
 const se = new G.Searcher();
